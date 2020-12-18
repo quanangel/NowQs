@@ -9,9 +9,8 @@ require __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . 
 // require_file(($systemPath));
 
 
-$http = new System();
-$a = $http->getInstance();
-var_dump($a);
+$http = (new System())->http;
+$http->run();
 
 
 // $allRequire = get_included_files();
