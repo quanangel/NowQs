@@ -22,7 +22,12 @@ Class Http{
     }
 
     public function run() {
-        echo "123";
+        echo "http server start";
+    }
+
+    // TODO: http server end
+    public function end() {
+        echo "http server end";
     }
 
 }
