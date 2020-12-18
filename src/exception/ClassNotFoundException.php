@@ -5,6 +5,7 @@ namespace nowqs\exception;
 
 use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
+use Throwable;
 
 Class ClassNotFoundException extends RuntimeException implements NotFoundExceptionInterface {
 
