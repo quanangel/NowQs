@@ -245,7 +245,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     public function reflect_class(string $class, array $vars = []) {
         try {
             $reflect = new ReflectionClass($class);
-        } catch (RefiectionException $e) {
+        } catch (ReflectionException $e) {
             throw new ClassNotFoundException('class not exist: ' . $class, $class, 0, $e);
         }
 
@@ -347,7 +347,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @return   mixed
      */
     public static function pull(string $tag, array $vars = [], bool $isNew = false) {
-        return static::getInstance()->make($abstract, $vars, $isNew);
+        return static::getInstance()->make($tag, $vars, $isNew);
     }
 
 
@@ -363,7 +363,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
             return;
         }
         $tag = $this->getRealAlias($tag);
-        $this->reflectCallBack[$tag][] = $calback;
+        $this->reflectCallBack[$tag][] = $callback;
     }
 
     /**
@@ -391,7 +391,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * implements ArrayAccess function
      * judgment some container exist in container instance array
      */
-    public function offsetExists($key): bool {
+    public function offsetExists($name): bool {
         return $this->exist($name);
     }
 
@@ -415,7 +415,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * implements ArrayAccess function
      */
-    public function offsetUnset($key) {
+    public function offsetUnset($name) {
         $this->delete($name);
     }
 
@@ -434,7 +434,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
-     * magic method
+     * magic function
      * set something at bind array
      */
     public function __set($name, $value) {
@@ -442,7 +442,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
-     * magic method
+     * magic function
      * get something
      * @param    string
      */
@@ -451,7 +451,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
-     * magic method
+     * magic function
      * judgment some container exist in container instance array
      */
     public function __isset($name): bool {
@@ -459,7 +459,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
-     * magic method
+     * magic function
      * delete some container at container instance array
      */
     public function __unset($name) {
