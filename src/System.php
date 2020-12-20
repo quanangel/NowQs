@@ -60,7 +60,6 @@ class System extends Container {
      */
     protected $configExt = '.php';
 
-
     /**
      * is it initialize
      * @var    boolean
@@ -74,11 +73,12 @@ class System extends Container {
     protected $bind = [
         'system' => System::class,
         'env' => Env::class,
+        'config' => Config::class,
         'http' => Http::class,
     ];
 
     public function __construct(string $systemPath = '') {
-        $this->nowqsPath = dirname(__DIR__) . DIRECTORY_SEPARATOR;
+        $this->nowqsPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
         $this->rootPath = $systemPath ? rtrim($this->nowqsPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : $this->get_default_root_path();
         $this->appPath = $this->rootPath . 'app' . DIRECTORY_SEPARATOR;
         $this->runtimePath = $this->rootPath . 'runtime' . DIRECTORY_SEPARATOR;
@@ -86,11 +86,11 @@ class System extends Container {
         static::setInstance($this);
         $this->bind_instance('system', $this);
         $this->bind_instance('nowqs/Container', $this);
-
-        // $this->instances()
     }
 
-    // TODO:
+    /**
+     * initialize function
+     */
     public function initialize() {
         $this->beginTime = microtime(true);
         $this->beginMemory = memory_get_usage();
@@ -98,8 +98,8 @@ class System extends Container {
         $this->initialized = true;
 
         // load env
-        if (is_file($this->rootPath . ".env")) {
-            $this->env->load($this->rootPath . ".env");
+        if (is_file($this->rootPath . '.env')) {
+            $this->env->load($this->rootPath . '.env');
         }
 
         // get config extension
@@ -109,13 +109,17 @@ class System extends Container {
 
         $this->load();
 
+        date_default_timezone_set($this->config->get('system.default_timezone', "Asia/Shanghai"));
+
+        // TODO: future
+
         return $this;
     }
 
     /**
      * debug mode initialize
      */
-    public function debug_mode_init(){
+    public function debug_mode_init() {
         $this->debug = $this->env->get('debug') ? true : false;
         if (!$this->debug) {
             ini_set('display_errors', 'Off');
@@ -124,15 +128,31 @@ class System extends Container {
         // TODO: something
     }
 
-
     public function load():void {
-        echo "</br>is system load";
+        echo '</br>is system load';
         $appPath = $this->get_app_path();
 
-        echo "<br>";
-        echo $appPath;
-        echo "<br>";
-        echo $this->get_nowqs_path();
+        // app Common function
+        if (is_file($appPath . 'Common.php')) {
+            include_once $appPath . 'Common.php';
+        }
+
+        // system Helper function
+        if (is_file($this->nowqsPath . 'Helper.php')) {
+            include_once $this->nowqsPath . 'Helper.php';
+        }
+
+        $files = [];
+        if (is_dir($this->get_config_path())) {
+            $files = glob($this->get_config_path() . '*' . $this->configExt);
+        }
+
+        foreach ($files as $file) {
+            $this->config->load($file, pathinfo($file, PATHINFO_FILENAME));
+        }
+
+        // TODO: future
+
     }
 
     /**
@@ -148,14 +168,14 @@ class System extends Container {
      * @return    string
      */
     protected function get_default_root_path(): string {
-        return dirname($this->nowqsPath) . DIRECTORY_SEPARATOR;
+        return dirname($this->nowqsPath, 4) . DIRECTORY_SEPARATOR;
     }
 
     /**
      * get nowqs path
      * @return    string
      */
-    public function get_nowqs_path(): string{
+    public function get_nowqs_path(): string {
         return $this->nowqsPath;
     }
 
@@ -163,7 +183,7 @@ class System extends Container {
      * get app path
      * @return    string
      */
-    public function get_app_path(): string{
+    public function get_app_path(): string {
         return $this->appPath;
     }
 
@@ -179,7 +199,7 @@ class System extends Container {
      * get runtime path
      * @return    string
      */
-    public function get_runtime_path(): string{
+    public function get_runtime_path(): string {
         return $this->appPath;
     }
 
@@ -191,6 +211,12 @@ class System extends Container {
         $this->runtimePath = $path;
     }
 
+    /**
+     * get config path
+     */
+    public function get_config_path(): string {
+        return $this->rootPath . 'config' . DIRECTORY_SEPARATOR;
+    }
 
     /**
      * get initialize status
@@ -200,16 +226,11 @@ class System extends Container {
         return $this->initialized;
     }
 
-
-
-
     /**
      * get begin time
      * @return    float
      */
-    public function get_begin_time(): float{
+    public function get_begin_time(): float {
         return $this->beginTime;
     }
-
-    
 }
