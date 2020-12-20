@@ -21,8 +21,13 @@ Class Http{
         $this->routePath = $this->system->get_root_path() . 'route' . DIRECTORY_SEPARATOR;
     }
 
-    public function run() {
+    public function run(Request $request = null) {
         $this->initialize();
+
+        $request = $request ?? $this->system->make("request", [], true);
+        $this->system->bind_instance('request', $request);
+
+        // TODO: 
 
         echo "</br>http server start";
     }
