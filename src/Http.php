@@ -22,12 +22,19 @@ Class Http{
     }
 
     public function run() {
-        echo "http server start";
+        $this->initialize();
+
+        echo "</br>http server start";
     }
 
     // TODO: http server end
     public function end() {
-        echo "http server end";
+        echo "</br>http server end";
+    }
+
+
+    public function initialize() {
+        if (!$this->system->initialized()) $this->system->initialize();
     }
 
 }
