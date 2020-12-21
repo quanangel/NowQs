@@ -6,6 +6,13 @@ namespace nowqs;
 use ArrayAccess;
 
 class Request implements ArrayAccess {
+
+
+    /**
+     * valid method
+     */
+    protected $validMethod = ['GET', 'POST', 'PUT', 'POST', 'OPTIONS', 'HEAD', 'PATCH'];
+
     /**
      * input stream
      */
@@ -166,7 +173,7 @@ class Request implements ArrayAccess {
 
         $request->header = array_change_key_case($header);
         $request->server = $_SERVER;
-        $request->env = $app->env;
+        $request->env = $system->env;
 
         return $request;
     }
@@ -403,15 +410,49 @@ class Request implements ArrayAccess {
 
     /**
      * judgment is CLI mode
+     * @return    boolean
      */
     public function is_cli(): bool {
+        return strpos(PHP_SAPI, 'cli') === 0;
+    }
+
+    /**
+     * judgment is CGI mode
+     * @return    boolean
+     */
+    public function is_cgi(): bool{
         return strpos(PHP_SAPI, 'cgi') === 0;
     }
 
-    public function is_get(): bool {
-        return $this->method() == "GET";
+    /**
+     * set valid method
+     */
+    public function set_valid_method(array $method = []) {
+        $this->validMethod = $method;
     }
 
+    /**
+     * get valid method
+     * @return    array
+     */
+    public function valid_method(): array {
+        return $this->validMethod;
+    }
+
+    /**
+     * judgment the method is valid
+     * @return    boolean
+     */
+    public function is_valid_method(string $method = ""): bool {
+        if (!in_array($method, $this->valid_method())) return false;
+        return $this->method() == strtoupper($method);
+    }
+
+
+    /**
+     * get server message
+     * @return    mixed
+     */
     public function server(string $key = '', $default = null) {
         if (empty($key)) {
             return $this->server;
@@ -606,6 +647,10 @@ class Request implements ArrayAccess {
      */
     public function ext(): string {
         return pathinfo($this->pathinfo(), PATHINFO_EXTENSION);
+    }
+
+    public function param($key = "", $default = null, $filter = "") {
+        // TODO: 
     }
 
     /**
