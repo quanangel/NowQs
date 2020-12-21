@@ -42,4 +42,20 @@ Class Http{
         if (!$this->system->initialized()) $this->system->initialize();
     }
 
+
+    /**
+     * load middle ware function
+     * @return void
+     */
+    public function load_middle_ware(): void {
+        if (is_file($this->system->get_system_path() . "middleware.php")) {
+            $this->system->middleware->import(include $this->system->get_system_path() . "middleware.php");
+        }
+    }
+
+
+    public function run_with_request(Request $request) {
+        $this->load_middle_ware();
+    }
+
 }

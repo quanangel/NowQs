@@ -37,10 +37,10 @@ class System extends Container {
     protected $nowqsPath = '';
 
     /**
-     * app path
+     * system path
      * @var    string
      */
-    protected $appPath = '';
+    protected $systemPath = '';
 
     /**
      * run time path
@@ -74,13 +74,15 @@ class System extends Container {
         'system' => System::class,
         'env' => Env::class,
         'config' => Config::class,
+        'middleware' => MiddleWare::class,
         'http' => Http::class,
+        'request' => Request::class,
     ];
 
     public function __construct(string $systemPath = '') {
         $this->nowqsPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
         $this->rootPath = $systemPath ? rtrim($this->nowqsPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : $this->get_default_root_path();
-        $this->appPath = $this->rootPath . 'app' . DIRECTORY_SEPARATOR;
+        $this->systemPath = $this->rootPath . 'system' . DIRECTORY_SEPARATOR;
         $this->runtimePath = $this->rootPath . 'runtime' . DIRECTORY_SEPARATOR;
 
         static::setInstance($this);
@@ -130,11 +132,11 @@ class System extends Container {
 
     public function load():void {
         echo '</br>is system load';
-        $appPath = $this->get_app_path();
+        $systemPath = $this->get_system_path();
 
         // app Common function
-        if (is_file($appPath . 'Common.php')) {
-            include_once $appPath . 'Common.php';
+        if (is_file($systemPath . 'Common.php')) {
+            include_once $systemPath . 'Common.php';
         }
 
         // system Helper function
@@ -183,16 +185,16 @@ class System extends Container {
      * get app path
      * @return    string
      */
-    public function get_app_path(): string {
-        return $this->appPath;
+    public function get_system_path(): string {
+        return $this->systemPath;
     }
 
     /**
      * set app path
      * @param    string
      */
-    public function set_app_path(string $path) {
-        $this->appPath = $path;
+    public function set_system_path(string $path) {
+        $this->systemPath = $path;
     }
 
     /**
@@ -200,7 +202,7 @@ class System extends Container {
      * @return    string
      */
     public function get_runtime_path(): string {
-        return $this->appPath;
+        return $this->runtimePath;
     }
 
     /**
